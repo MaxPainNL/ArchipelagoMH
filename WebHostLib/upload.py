@@ -219,8 +219,8 @@ def uploads():
 
 @app.route('/user-content', methods=['GET'])
 def user_content():
-    rooms = select(room for room in Room if room.owner == session["_id"])
-    seeds = select(seed for seed in Seed if seed.owner == session["_id"])
+    rooms = select(room for room in Room) #  if room.owner == session["_id"]
+    seeds = select(seed for seed in Seed) #  if seed.owner == session["_id"]
     return render_template("userContent.html", rooms=rooms, seeds=seeds)
 
 

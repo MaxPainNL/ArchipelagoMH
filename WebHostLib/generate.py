@@ -112,7 +112,7 @@ def gen_game(gen_options: dict, meta: Optional[Dict[str, Any]] = None, owner=Non
     race = meta.setdefault("generator_options", {}).setdefault("race", False)
 
     def task():
-        target = tempfile.TemporaryDirectory()
+        # target = tempfile.TemporaryDirectory()
         playercount = len(gen_options)
         seed = get_seed()
 
@@ -129,7 +129,7 @@ def gen_game(gen_options: dict, meta: Optional[Dict[str, Any]] = None, owner=Non
         erargs.spoiler = meta["generator_options"].get("spoiler", 0)
         erargs.race = race
         erargs.outputname = seedname
-        erargs.outputpath = target.name
+        erargs.outputpath = 'generated/' + seedname #target.name
         erargs.teams = 1
         erargs.plando_options = PlandoOptions.from_set(meta.setdefault("plando_options",
                                                                        {"bosses", "items", "connections", "texts"}))
@@ -137,6 +137,8 @@ def gen_game(gen_options: dict, meta: Optional[Dict[str, Any]] = None, owner=Non
         erargs.skip_output = False
         erargs.spoiler_only = False
         erargs.csv_output = False
+
+        os.makedirs(erargs.outputpath, exist_ok=True)
 
         name_counter = Counter()
         for player, (playerfile, settings) in enumerate(gen_options.items(), 1):
@@ -154,7 +156,7 @@ def gen_game(gen_options: dict, meta: Optional[Dict[str, Any]] = None, owner=Non
             raise Exception(f"Names have to be unique. Names: {Counter(erargs.name.values())}")
         ERmain(erargs, seed, baked_server_options=meta["server_options"])
 
-        return upload_to_db(target.name, sid, owner, race)
+        return upload_to_db(seedname, sid, owner, race) # target.name
     thread_pool = concurrent.futures.ThreadPoolExecutor(max_workers=1)
     thread = thread_pool.submit(task)
 
